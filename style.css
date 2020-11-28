@@ -1,5 +1,5 @@
 body {
-    background-color: lightslategray;
+    background-color: whitesmoke ;
     margin: 0;
     height: 100vh;
     display : flex;
@@ -7,6 +7,25 @@ body {
     align-items: center;
 }
 
-canvas {
-    border: 3px solid white;
+/*
+#scoreZone {
+    height: 3em;
+    display: flex;
 }
+*/
+
+canvas {
+    background-color : lightslategrey;
+    border: 3px solid white;
+    height: 600 px;
+    width: 900 px;
+}
+
+/*
+#life {
+   color:darkslategrey;
+    width: 20vw;
+    text-align: center;
+    padding: 20px;
+}
+*/

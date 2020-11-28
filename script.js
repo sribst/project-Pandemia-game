@@ -5,6 +5,7 @@ const canvasHeight = canvasElement.height;
 
 const context = canvasElement.getContext('2d');
 
+//GAME ON
 
 const game = new Game();
 
