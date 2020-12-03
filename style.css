@@ -7,24 +7,17 @@ body {
     align-items: center;
 }
 
-/*
-#scoreZone {
-    height: 3em;
-    display: flex;
-}
-*/
-
 canvas {
     background-color : lightslategrey;
     border: 3px solid white;
     height: 600 px;
     width: 900 px;
 }
-
 /*
-#life {
-   color:darkslategrey;
-    width: 20vw;
+#countdown, 
+#health {
+    color: whitesmoke;
+    width: 10vw;
     text-align: center;
     padding: 20px;
 }
