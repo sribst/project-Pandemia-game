@@ -20,8 +20,8 @@ class Game {
     this.generateVirus();
     this.generateMask();
     this.vaccine = null;
-    this.score = 10;
-    this.countdown = 20;
+    this.score = 15;
+    this.countdown = 90;
     this.condition = true;
     this.lastTimestamp = 0;
   }
@@ -48,11 +48,11 @@ class Game {
   }
 
   reset() {
-    this.score = 10;
+    this.score = 15;
     this.generateVirus();
     this.generateMask();
     this.vaccine = null;
-    this.countdown = 20;
+    this.countdown = 90;
     this.condition = true;
   }
 
@@ -164,7 +164,7 @@ class Game {
       this.player.y + this.player.height >= this.virus.y &&
       this.player.y <= this.virus.y + this.virus.height
     ) {
-      this.score -= 5;
+      this.score -= 10;
       getHit.play();
       this.generateVirus();
     }
@@ -212,7 +212,7 @@ class Game {
       this.virus.runLogic();
       this.countdownMethod();
 
-      if (this.score >= 20 && !this.vaccine) {
+      if (this.score >= 100 && !this.vaccine) {
         this.generateVaccine();
         vaccineUnlock.play();
       }
