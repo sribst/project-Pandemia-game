@@ -1,8 +1,6 @@
 const vaccineImage = new Image();
 vaccineImage.src = './images/Vaccine.png';
 
-// Class Vaccine
-
 class Vaccine {
     constructor (x, y, width, height) {
         this.x = x;
@@ -11,7 +9,6 @@ class Vaccine {
         this.height = 50;
     }
 
-  
     draw () {
         context.drawImage(
             vaccineImage,
