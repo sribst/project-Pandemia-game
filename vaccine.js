@@ -1,16 +1,20 @@
+const vaccineImage = new Image();
+vaccineImage.src = './images/Vaccine.png';
+
 // Class Vaccine
 
 class Vaccine {
     constructor (x, y, width, height) {
         this.x = x;
         this.y = y;
-        this.width = width;
-        this.height = height;
+        this.width = 50;
+        this.height = 50;
     }
 
+  
     draw () {
-        context.fillStyle = 'gold';
-        context.fillRect(
+        context.drawImage(
+            vaccineImage,
             this.x,
             this.y,
             this.width,

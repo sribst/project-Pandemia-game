@@ -7,16 +7,54 @@
     <link href="style.css" rel="stylesheet" type="text/css" />
   </head>
   <body>
-    <!--->
-    <div id="health"> </div>
-    <div id="countdown"></div>
-    <canvas id="canvas" width="900" height="600"></canvas>
-    <--->
+
+    <!--STARTING SCREEN-->
+    <section id="startScreen">
+      <div>
+        <h1>PANDEMIA</h1>
+          <div id="instructions">
+            <h3>Objectives:</h3>
+              <p>You have 90 seconds to save the world !</p>
+              <p>Avoid the virus and get as many masks as you can to stay alive : one mask gets you 5 points.</p>
+              <p>Be careful : each time the virus gets you, you lose 10 points and your health deteriorates. </p>
+              <p>If your health goes down to 0, you are infected !</p>
+              <p>Once you collect enough masks to get to 100 points of health, the vaccine is unlocked ! </p>
+              <p>Get to it before the timer ends and save the world !</p> 
+          </div>
+      </div>
+      <button id="startGameButton">Start the game</button>
+    </section>
+
+    <!--GAME OVER SCREEN-->
+    <section id="gameOverScreen" class="styles">
+        <div>
+            <h1>GAME OVER</h1>
+            <p> You are infected !</p>
+        </div>
+        <button id="restartGameButton">Play Again</button>
+    </section>
+    
+    <!--WIN SCREEN-->
+    <section id="youWonScreen" class="styles">
+        <div>
+            <h1>YOU WON</h1>
+            <p> You just saved the world !</p>
+        </div>
+        <button id="restartGameButton">Play Again</button>
+    </section>
+
+    <!--GAME INFO-->
+    <section id="gamingScreen">
+      <canvas id="canvas" width="600" height="600"></canvas>
+    </section>
+    
+    <!--SCRIPTS-->
     <script src="player.js"></script>
     <script src="mask.js"></script>
     <script src="virus.js"></script>
     <script src="vaccine.js"></script>
     <script src="game.js"></script>
     <script src="script.js"></script>
+
   </body>
 </html>

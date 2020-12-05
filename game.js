@@ -1,45 +1,114 @@
+const getHit = new Audio('./sounds/PandemiaGame_Hit.wav');
+const getMask = new Audio('./sounds/PandemiaGame_Mask.wav');
+const vaccineUnlock = new Audio('./sounds/PandemiaGame_VaccineUnlocked.wav');
+const winGame = new Audio('./sounds/PandemiaGame_Win.mp3');
+const loseGame = new Audio('./sounds/PandemiaGame_GameOver.mp3');
+const pressPay = new Audio('./sounds/PandemiaGame_Play.wav');
+
 // Class Game
 
 class Game {
-  constructor () {
-      this.player = new Player (canvasWidth / 2 - 25 / 2, canvasHeight / 2 - 25 / 2, 25, 25);
-      
-      this.setKeyBindings();
-      this.score = 0;
-      this.generateVirus();
-      this.generateMask(); 
-      this.vaccine = {};
-      this.countdown();  
+  constructor() {
+    this.player = new Player(
+      canvasWidth / 2 - 25 / 2,
+      canvasHeight / 2 - 25 / 2,
+      25,
+      25
+    );
+
+    this.setKeyBindings();
+    this.generateVirus();
+    this.generateMask();
+    this.vaccine = null;
+    this.score = 10;
+    this.countdown = 20;
+    this.condition = true;
+    this.lastTimestamp = 0;
   }
 
-  // 1. Make the player move with arrow keys pressed
+  gameOver() {
+    gamingScreen.style.display = 'none';
+    gameOver.style.display = 'block';
+    loseGame.play();
+  }
 
-  setKeyBindings () {
-    
-    window.addEventListener('keydown', (event) => {
-         switch(event.code) {
-          case 'ArrowUp':
-            this.player.y -= 40;
-            break;
-          case 'ArrowDown':
-            this.player.y += 40;
-            break;
-          case 'ArrowLeft': 
-            this.player.x -= 40;
-            break;
-          case 'ArrowRight':
-            this.player.x += 40;
-            break;
-          } 
-      });
+  youWon() {
+    gamingScreen.style.display = 'none';
+    gameOver.style.display = 'none';
+    youWon.style.display = 'block';
+    restartGame.style.display = 'block';
+    winGame.play();
+  }
+
+  loseWhenScoreIsNegative() {
+    if (this.score <= 0) {
+      this.gameOver();
+      loseGame.play();
     }
-  
-  
-  // GENERATE THE MASKS
-  // 1. set random position
-  // 2. generate the masks
-  
-  generateMask () {
+  }
+
+  reset() {
+    this.score = 10;
+    this.generateVirus();
+    this.generateMask();
+    this.vaccine = null;
+    this.countdown = 20;
+    this.condition = true;
+  }
+
+  setKeyBindings() {
+    window.addEventListener('keydown', (event) => {
+      switch (event.code) {
+        case 'ArrowUp':
+          this.player.y -= 40;
+          this.player.img = playerBack;
+          break;
+        case 'ArrowDown':
+          this.player.y += 40;
+          this.player.img = playerFront;
+          break;
+        case 'ArrowLeft':
+          this.player.x -= 40;
+          this.player.img = playerLeft;
+          break;
+        case 'ArrowRight':
+          this.player.x += 40;
+          this.player.img = playerRight;
+          break;
+      }
+    });
+  }
+
+  //COUNTDOWN
+
+  countdownMethod() {
+    if (this.countdown > 0) {
+      const currentTimeStamp = Date.now();
+      if (currentTimeStamp > this.lastTimestamp + 1000) {
+        this.countdown--;
+        this.lastTimestamp = currentTimeStamp;
+      }
+    } else {
+      this.condition = false;
+      this.gameOver();
+    }
+  }
+
+  // STAY INSIDE CANVAS
+
+  stayInsideCanvas() {
+    this.player.x = Math.max(
+      Math.min(this.player.x, canvasWidth - this.player.width),
+      0
+    );
+    this.player.playerY = Math.max(
+      Math.min(this.player.y, canvasHeight - this.player.height),
+      0
+    );
+  }
+  // GENERATE MASKS, VIRUS, VACCINE
+
+  generateMask() {
     let randomXPosition = Math.floor(Math.random() * (canvasWidth - 25));
     let randomYPosition = Math.floor(Math.random() * (canvasHeight - 25));
 
@@ -47,147 +116,133 @@ class Game {
     this.mask = mask;
   }
 
-  
-  // GENERATE THE VIRUS
-  // 1. set random position
-  // 2. generate the virus
-  // 3. make it follow the player (Zé's code)
-  // 4. -10 points after collision with player
-  // 4. generate new virus after collision
-
-  generateVirus () {
+  generateVirus() {
     let randomXPosition = Math.floor(Math.random() * (canvasWidth - 25));
     let randomYPosition = Math.floor(Math.random() * (canvasHeight - 25));
 
-    const virus = new Virus (this, randomXPosition, randomYPosition, 25, 25);
+    const virus = new Virus(this, randomXPosition, randomYPosition, 25, 25);
     this.virus = virus;
   }
 
-
-  // GENERATE THE VACCINE
-  // 1. set random position
-  // 2. generate the vaccine when score >= 100
-  // 3. make vaccine disappear after 2000 ms (?)
-  
-  generateVaccine () {
+  generateVaccine() {
     let randomXPosition = Math.floor(Math.random() * (canvasWidth - 25));
     let randomYPosition = Math.floor(Math.random() * (canvasHeight - 25));
 
-    if (this.score >= 100){
-    const mask = new Vaccine (randomXPosition, randomYPosition, 25, 25);
+    const vaccine = new Vaccine(randomXPosition, randomYPosition, 25, 25);
     this.vaccine = vaccine;
-    }
   }
 
-  // PLAYER/MASK COLLISION
-  // 1. detect collision (make it a loop)
-  // 2. +5 points after collision 
-  // 3. generate new mask after collision
+  /*
+  // STOP GENERATING MASK AFTER VACCINE
 
-  collisionBetweenPlayerAndMask () {
+  stopMask(){
+    if (this.score>=20){
+      this.mask= null ;
+    }
+  }
+*/
+
+  // COLLISION DETECTION
+
+  collisionBetweenPlayerAndMask() {
     if (
       this.player.x + this.player.width >= this.mask.x &&
       this.player.x <= this.mask.x + this.mask.width &&
       this.player.y + this.player.height >= this.mask.y &&
       this.player.y <= this.mask.y + this.mask.height
-    ){
-      this.score +=5;
+    ) {
+      this.score += 5;
+      getMask.play();
       this.generateMask();
     }
   }
 
-
-  //PLAYER/VIRUS COLLISION
-  // 1. detect collision (make it a loop)
-  // 2. make virus disappear (array splice) after collision
-  // 3. -10 points after collision 
-
-  collisionBetweenPlayerAndVirus () {
+  collisionBetweenPlayerAndVirus() {
     if (
       this.player.x + this.player.width >= this.virus.x &&
       this.player.x <= this.virus.x + this.virus.width &&
       this.player.y + this.player.height >= this.virus.y &&
       this.player.y <= this.virus.y + this.virus.height
-    ){
-      this.score -=10;
+    ) {
+      this.score -= 5;
+      getHit.play();
       this.generateVirus();
+    }
   }
-} 
 
-  //PLAYER/VACCINE COLLISION
-  // 1. detect collision (make it a loop)
-  // 2. make vaccine disappear  after collision
-  // 3. -10 points after collision 
-
-  collisionBetweenPlayerAndVaccine () {
+  collisionBetweenPlayerAndVaccine() {
     if (
+      this.countdown >= 0 &&
       this.player.x + this.player.width >= this.vaccine.x &&
       this.player.x <= this.vaccine.x + this.vaccine.width &&
       this.player.y + this.player.height >= this.vaccine.y &&
       this.player.y <= this.vaccine.y + this.vaccine.height
-    ){
-      console.log ('congrats, you just saved the world !');
+    ) {
+      this.condition = false;
+      this.youWon();
+    }
+  }
+
+  collisionDetection() {
+    this.collisionBetweenPlayerAndMask();
+    this.collisionBetweenPlayerAndVirus();
+    if (this.vaccine) {
+      this.collisionBetweenPlayerAndVaccine();
+    }
+  }
+
+  // RUN LOGIC
+
+  runLogic() {
+    this.stayInsideCanvas();
+    this.loseWhenScoreIsNegative();
+
+    if (this.score <= 0) {
+      this.condition = false;
+    }
+  }
+
+  // LOOP
+
+  loop() {
+    if (this.condition) {
+      this.runLogic();
+      this.collisionDetection();
+      this.draw();
+      this.virus.runLogic();
+      this.countdownMethod();
+
+      if (this.score >= 20 && !this.vaccine) {
+        this.generateVaccine();
+        vaccineUnlock.play();
+      }
+
+      window.requestAnimationFrame(() => {
+        this.loop();
+      });
+    } else {
+      this.condition = false;
+    }
+  }
+
+  // DRAW
+
+  drawScore() {
+    context.fillStyle = 'white';
+    context.font = '64px sans-serif';
+    context.fillText(this.score, 30, 80);
+    context.fillText(this.countdown, 500, 80);
+  }
+
+  draw() {
+    context.clearRect(0, 0, canvasWidth, canvasHeight);
+    this.player.draw();
+    this.mask.draw();
+    this.virus.draw();
+    if (this.vaccine) {
+      this.vaccine.draw();
+    }
+
+    this.drawScore();
   }
 }
-
-  /* DO NOT FORGET
-  avoid collision between mask, virus and obstacles (no overlap)
-  detect collision between player and obstacles
-  */
-
-countdown () {
-if (this.score>=100) {
-let timeleft = 10;
-let timer = setInterval(function(){
-  if(timeleft <= 0){
-    clearInterval(downloadTimer);
-    document.getElementById("countdown").innerHTML = "TOO LATE - GAME OVER ";
-  } else {
-    document.getElementById("countdown").innerHTML = timeleft + " seconds before the end of the world ";
-  }
-  timeleft --;
-  }, 1000);
-}
-} 
-
-
-  
-collisionDetection () {
-  this.collisionBetweenPlayerAndMask();
-  this.collisionBetweenPlayerAndVirus();
-  this.collisionBetweenPlayerAndVaccine();
-}
-  
-
-loop() {
-  this.collisionDetection();
-  this.draw();
-  this.virus.runLogic();
-  window.requestAnimationFrame(() => {
-    this.loop();
-});
-}
-
-
-//SCORE BOARD
-  
-drawScore () {
-context.fillStyle = 'white';
-context.font = '64px sans-serif';
-context.fillText(this.score, 30, 60);
-}
-
-
-draw() {
-  context.clearRect(0, 0, canvasWidth, canvasHeight);
-  this.player.draw();
-  this.mask.draw();
-  this.virus.draw();
-  this.drawScore();
-  
-}
-}
-
-  
-
-
