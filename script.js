@@ -6,7 +6,7 @@ const game = new Game();
 
 
 const startGame = document.getElementById('startGameButton');
-const restartGame = document.getElementById('restartGameButton');
+const restartGame = document.getElementsByClassName('restartGameButton');
 
 const startScreen = document.getElementById('startScreen');
 const gameOver = document.getElementById('gameOverScreen');
@@ -17,16 +17,30 @@ const gamingScreen = document.getElementById('gamingScreen');
 startGame.addEventListener('click', () => {
   gamingScreen.style.display = 'block';
   startScreen.style.display = 'none';
+  game.soundtrackMusic();
   
 
   game.loop();
 });
 
-restartGame.addEventListener('click', () => {
+restartGame[0].addEventListener('click', () => {
   gameOver.style.display = 'none';
+
   gamingScreen.style.display = 'block';
   
+  
+  game.soundtrackMusic();
+  game.condition = true;
+  game.reset();
+  game.loop();
+});
 
+restartGame[1].addEventListener('click', () => {
+  youWon.style.display = 'none';
+  gamingScreen.style.display = 'block';
+  
+  
+  game.soundtrackMusic();
   game.condition = true;
   game.reset();
   game.loop();

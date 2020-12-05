@@ -20,6 +20,21 @@ class Player {
         
     }
 
+    runLogic (){
+        //const canvasTopLimit = 
+        if (this.x > canvas.width - this.width) {
+            this.x = canvas.width - this.width;
+        } else if (this.x < 0) {
+            this.x = 0;
+        }
+        if (this.y > canvas.height - this.height) {
+            this.y = canvas.height - this.height;
+        }
+        if (this.y < 0) {
+            this.y = 0;
+        }
+    }
+
     draw () {
         context.drawImage(
             this.img,

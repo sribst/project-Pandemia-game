@@ -44,6 +44,14 @@ button {
   align-content: center;
 }
 
+div {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  align-content: center;
+}
+
 #startScreen,
 #gameOverScreen,
 #youWonScreen {
@@ -75,4 +83,19 @@ button {
 #gameOverScreen,
 #youWonScreen {
   display: none;
+}
+
+.restartGameButton  {
+  width: 10rem;
+  height: 4em;
+  background-color: #dd3737;
+  color: whitesmoke;
+  margin-top: 20px;
+  border: 2px solid #dd3737;
+  font-family: '28_days_laterregular';
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  align-content: center;
 }

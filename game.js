@@ -3,7 +3,7 @@ const getMask = new Audio('./sounds/PandemiaGame_Mask.wav');
 const vaccineUnlock = new Audio('./sounds/PandemiaGame_VaccineUnlocked.wav');
 const winGame = new Audio('./sounds/PandemiaGame_Win.mp3');
 const loseGame = new Audio('./sounds/PandemiaGame_GameOver.mp3');
-const pressPay = new Audio('./sounds/PandemiaGame_Play.wav');
+const soundtrack = new Audio('./sounds/PandemiaGame_Soundtrack.mp3');
 
 // Class Game
 
@@ -20,8 +20,8 @@ class Game {
     this.generateVirus();
     this.generateMask();
     this.vaccine = null;
-    this.score = 15;
-    this.countdown = 90;
+    this.score = 20;
+    this.countdown = 30;
     this.condition = true;
     this.lastTimestamp = 0;
   }
@@ -29,6 +29,7 @@ class Game {
   gameOver() {
     gamingScreen.style.display = 'none';
     gameOver.style.display = 'block';
+    loseGame.volume = 0.1;
     loseGame.play();
   }
 
@@ -37,6 +38,7 @@ class Game {
     gameOver.style.display = 'none';
     youWon.style.display = 'block';
     restartGame.style.display = 'block';
+    winGame.volume = 0.1;
     winGame.play();
   }
 
@@ -47,17 +49,34 @@ class Game {
     }
   }
 
+  soundtrackMusic() {
+    if ((this.condition = true)) {
+      soundtrack.volume = 0.1;
+      soundtrack.play();
+    } else {
+      soundtrack.pause();
+    }
+  }
+
+  stopSoundtrackMusic() {
+    if ((this.youWon = true)) {
+      soundtrack.pause();
+    }
+  }
+
   reset() {
-    this.score = 15;
+    this.score = 20;
     this.generateVirus();
     this.generateMask();
     this.vaccine = null;
-    this.countdown = 90;
+    this.countdown = 30;
     this.condition = true;
+    this.lastTimestamp = 0;
   }
 
   setKeyBindings() {
     window.addEventListener('keydown', (event) => {
+      event.preventDefault();
       switch (event.code) {
         case 'ArrowUp':
           this.player.y -= 40;
@@ -94,41 +113,29 @@ class Game {
     }
   }
 
-  // STAY INSIDE CANVAS
-
-  stayInsideCanvas() {
-    this.player.x = Math.max(
-      Math.min(this.player.x, canvasWidth - this.player.width),
-      0
-    );
-    this.player.playerY = Math.max(
-      Math.min(this.player.y, canvasHeight - this.player.height),
-      0
-    );
-  }
   // GENERATE MASKS, VIRUS, VACCINE
 
   generateMask() {
-    let randomXPosition = Math.floor(Math.random() * (canvasWidth - 25));
-    let randomYPosition = Math.floor(Math.random() * (canvasHeight - 25));
+    let randomXPosition = Math.floor(Math.random() * (canvasWidth - 50));
+    let randomYPosition = Math.floor(Math.random() * (canvasHeight - 50));
 
-    const mask = new Mask(randomXPosition, randomYPosition, 25, 25);
+    const mask = new Mask(randomXPosition, randomYPosition, 50, 50);
     this.mask = mask;
   }
 
   generateVirus() {
-    let randomXPosition = Math.floor(Math.random() * (canvasWidth - 25));
-    let randomYPosition = Math.floor(Math.random() * (canvasHeight - 25));
+    let randomXPosition = Math.floor(Math.random() * (canvasWidth - 50));
+    let randomYPosition = Math.floor(Math.random() * (canvasHeight - 50));
 
     const virus = new Virus(this, randomXPosition, randomYPosition, 25, 25);
     this.virus = virus;
   }
 
   generateVaccine() {
-    let randomXPosition = Math.floor(Math.random() * (canvasWidth - 25));
-    let randomYPosition = Math.floor(Math.random() * (canvasHeight - 25));
+    let randomXPosition = Math.floor(Math.random() * (canvasWidth - 50));
+    let randomYPosition = Math.floor(Math.random() * (canvasHeight - 50));
 
-    const vaccine = new Vaccine(randomXPosition, randomYPosition, 25, 25);
+    const vaccine = new Vaccine(randomXPosition, randomYPosition, 50, 50);
     this.vaccine = vaccine;
   }
 
@@ -136,7 +143,7 @@ class Game {
   // STOP GENERATING MASK AFTER VACCINE
 
   stopMask(){
-    if (this.score>=20){
+    if (this.score>=100){
       this.mask= null ;
     }
   }
@@ -152,6 +159,7 @@ class Game {
       this.player.y <= this.mask.y + this.mask.height
     ) {
       this.score += 5;
+      getMask.volume = 0.1;
       getMask.play();
       this.generateMask();
     }
@@ -165,7 +173,9 @@ class Game {
       this.player.y <= this.virus.y + this.virus.height
     ) {
       this.score -= 10;
+      getHit.volume = 0.2;
       getHit.play();
+
       this.generateVirus();
     }
   }
@@ -180,6 +190,7 @@ class Game {
     ) {
       this.condition = false;
       this.youWon();
+      this.stopSoundtrackMusic();
     }
   }
 
@@ -194,9 +205,7 @@ class Game {
   // RUN LOGIC
 
   runLogic() {
-    this.stayInsideCanvas();
     this.loseWhenScoreIsNegative();
-
     if (this.score <= 0) {
       this.condition = false;
     }
@@ -210,10 +219,12 @@ class Game {
       this.collisionDetection();
       this.draw();
       this.virus.runLogic();
+      this.player.runLogic();
       this.countdownMethod();
 
-      if (this.score >= 100 && !this.vaccine) {
+      if (this.score >= 30 && !this.vaccine) {
         this.generateVaccine();
+        vaccineUnlock.volume = 0.2;
         vaccineUnlock.play();
       }
 
@@ -222,6 +233,7 @@ class Game {
       });
     } else {
       this.condition = false;
+      soundtrack.pause();
     }
   }
 
